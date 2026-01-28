@@ -1,60 +1,99 @@
 # Markdown to Google Docs
 
-Convert markdown files to Google Docs with rich formatting, preserving styles and links.
+A [Claude Code](https://docs.anthropic.com/en/docs/claude-code) skill that converts markdown files to Google Docs with rich formatting, preserving styles and links.
 
 ## Features
 
-- **In-place updates** - Re-running on the same markdown file updates the existing Google Doc, preserving the URL
-- **Text formatting** - Bold, italic, underline, strikethrough, links (including in tables)
+- **In-place updates** - Re-running preserves the existing Google Doc URL
+- **Text formatting** - Bold, italic, underline, links (including in tables)
 - **Custom styling applied automatically**:
   - Proxima Nova font for headings
   - Table borders (0.5pt, dark gray)
-  - Table header row: bold text + light gray background
+  - Table header row: bold + light gray background
   - Vertical center alignment in table cells
-  - 11pt font in tables
   - Space after paragraphs
-- **Rate limit handling** - Automatically waits and retries without creating duplicate docs
+- **Rate limit handling** - Waits and retries without creating duplicate docs
 
-## Quick Start
+## Installation as a Claude Code Skill
+
+### 1. Clone to your skills directory
+
+```bash
+# Global installation (available in all projects)
+mkdir -p ~/.claude/skills
+cd ~/.claude/skills
+git clone https://github.com/zbtirrell/markdown-to-google-docs.git
+
+# Or project-specific installation
+mkdir -p your-project/.claude/skills
+cd your-project/.claude/skills
+git clone https://github.com/zbtirrell/markdown-to-google-docs.git
+```
+
+### 2. Install dependencies
+
+```bash
+# Pandoc (for markdown conversion)
+brew install pandoc
+
+# Python packages
+pip install google-api-python-client google-auth google-auth-oauthlib google-auth-httplib2
+```
+
+### 3. Set up Google API credentials
+
+1. Create a project in [Google Cloud Console](https://console.cloud.google.com/)
+2. Enable the **Google Drive API** and **Google Docs API**
+3. Create OAuth 2.0 credentials (Desktop application)
+4. Download the client secret JSON file
+5. Export the path:
+
+```bash
+export GOOGLE_CLIENT_SECRET_FILE="/path/to/client-secret.json"
+```
+
+First run will open a browser for authentication.
+
+## Usage with Claude Code
+
+Once installed, ask Claude to convert your markdown:
+
+> "Upload my-document.md to Google Docs"
+
+> "Convert the project README to a Google Doc"
+
+> "Update the Google Doc for strategy.md"
+
+Claude will use the skill automatically when it recognizes the task.
+
+### What happens
+
+1. Claude converts your markdown to a Google Doc
+2. The doc ID is saved as a comment in your markdown file:
+   ```markdown
+   <!-- google-doc-id: 1abc123... -->
+
+   # Your Document
+   ...
+   ```
+3. Future updates preserve the same URL
+
+## CLI Usage
+
+You can also run the script directly:
 
 ```bash
 # Upload markdown as a new Google Doc
 ./upload.sh document.md
 
-# Update an existing doc (if markdown contains google-doc-id comment)
-./upload.sh document.md
+# With custom title
+./upload.sh document.md --title "My Document"
+
+# Upload to specific Drive folder
+./upload.sh document.md --folder "1abc123FolderId"
 
 # Force create new doc (ignore existing ID)
 ./upload.sh document.md --new
-```
-
-## Installation
-
-### Prerequisites
-
-1. **Pandoc**
-   ```bash
-   brew install pandoc
-   ```
-
-2. **Python dependencies**
-   ```bash
-   pip install google-api-python-client google-auth google-auth-oauthlib google-auth-httplib2
-   ```
-
-3. **Google API credentials**
-
-   Set up OAuth credentials in Google Cloud Console and export the path:
-   ```bash
-   export GOOGLE_CLIENT_SECRET_FILE="/path/to/client-secret.json"
-   ```
-
-   First run will open browser for authentication.
-
-## Usage
-
-```bash
-./upload.sh <input.md> [options]
 ```
 
 ### Options
@@ -62,50 +101,11 @@ Convert markdown files to Google Docs with rich formatting, preserving styles an
 | Option | Description |
 |--------|-------------|
 | `-t, --title TITLE` | Document title (default: filename) |
-| `-f, --folder ID` | Google Drive folder ID to upload to |
+| `-f, --folder ID` | Google Drive folder ID |
 | `--reference-doc FILE` | Word template for base styling |
 | `--keep-docx` | Keep intermediate .docx file |
-| `--new` | Force create new doc (ignore existing ID) |
-| `--no-save-id` | Don't save doc ID to markdown file |
-
-### Examples
-
-```bash
-# Basic upload
-./upload.sh notes.md
-
-# Custom title
-./upload.sh report.md --title "Q1 Report"
-
-# Upload to specific folder
-./upload.sh doc.md --folder "1abc123FolderId"
-
-# Keep the intermediate Word file
-./upload.sh doc.md --keep-docx
-```
-
-## How It Works
-
-1. **Converts** markdown to .docx using pandoc
-2. **Uploads** to Google Drive with conversion to Google Docs format
-3. **Applies styling** via Google Docs API (headings, tables, spacing)
-4. **Saves doc ID** as HTML comment in markdown for future updates:
-   ```markdown
-   <!-- google-doc-id: 1abc123... -->
-
-   # Your Document
-   ...
-   ```
-
-## URL Preservation
-
-When you run the script on a markdown file that already has a `google-doc-id` comment, it updates the existing document in place rather than creating a new one. This preserves:
-
-- The document URL (for sharing links)
-- The document's location in Drive
-- Sharing permissions
-
-If an update fails (e.g., rate limit), the script exits with an error and preserves the original document rather than creating a duplicate.
+| `--new` | Force create new doc |
+| `--no-save-id` | Don't save doc ID to markdown |
 
 ## Formatting Support
 
@@ -119,6 +119,24 @@ If an update fails (e.g., rate limit), the script exits with an error and preser
 | Lists | Bulleted/numbered with spacing |
 | Code blocks | Monospace font |
 
+## Customizing Styles
+
+Edit the `apply_document_styles()` function in `upload.py`:
+
+```python
+# Heading font
+heading_font = 'Proxima Nova'  # Change to your preferred font
+
+# Table border color (#b7b7b7 = dark gray 1)
+'red': 0.718, 'green': 0.718, 'blue': 0.718
+
+# Header background (#f3f3f3)
+'red': 0.953, 'green': 0.953, 'blue': 0.953
+
+# Space after paragraphs
+'magnitude': 6, 'unit': 'PT'
+```
+
 ## Troubleshooting
 
 | Issue | Solution |
@@ -126,8 +144,7 @@ If an update fails (e.g., rate limit), the script exits with an error and preser
 | "pandoc: command not found" | `brew install pandoc` |
 | "GOOGLE_CLIENT_SECRET_FILE not set" | Export path to OAuth credentials |
 | Rate limit errors | Wait 60 seconds and retry |
-| Links in tables wrong | Update to latest version (re-fetches indices) |
-| Wrong font in tables | 11pt is applied automatically to prevent inheritance |
+| Authentication errors | Delete `~/.google-drive-upload-token.json` and retry |
 
 ## License
 
