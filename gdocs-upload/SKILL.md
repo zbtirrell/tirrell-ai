@@ -1,5 +1,5 @@
 ---
-name: gdocs
+name: gdocs-upload
 description: Convert markdown files to Google Docs with rich formatting. Use when user asks to upload markdown to Google Docs, convert markdown to gdocs, or sync markdown with Google Drive. Supports in-place updates preserving URLs, text styling (bold, italic, links), tables with borders and headers, and Proxima Nova font for headings.
 allowed-tools: [Bash]
 ---
@@ -12,16 +12,16 @@ Convert markdown files to Google Docs and upload to Google Drive with rich forma
 
 ```bash
 # Upload markdown as a new Google Doc
-.claude/skills/markdown-to-google-docs/upload.sh input.md
+~/.claude/skills/tirrell-ai/gdocs-upload/upload.sh input.md
 
 # With custom title
-.claude/skills/markdown-to-google-docs/upload.sh input.md --title "My Document"
+~/.claude/skills/tirrell-ai/gdocs-upload/upload.sh input.md --title "My Document"
 
 # Upload to specific Drive folder
-.claude/skills/markdown-to-google-docs/upload.sh input.md --folder "1abc123FolderId"
+~/.claude/skills/tirrell-ai/gdocs-upload/upload.sh input.md --folder "1abc123FolderId"
 
 # Force create new doc (ignore existing ID)
-.claude/skills/markdown-to-google-docs/upload.sh input.md --new
+~/.claude/skills/tirrell-ai/gdocs-upload/upload.sh input.md --new
 ```
 
 ## Options
@@ -91,14 +91,14 @@ pip install google-api-python-client google-auth google-auth-oauthlib google-aut
 ### Basic Upload
 
 ```bash
-.claude/skills/markdown-to-google-docs/upload.sh notes.md
+~/.claude/skills/tirrell-ai/gdocs-upload/upload.sh notes.md
 # Output: https://docs.google.com/document/d/xxx/edit
 ```
 
 ### Custom Title
 
 ```bash
-.claude/skills/markdown-to-google-docs/upload.sh slack-post.txt --title "TikTok Strategy Update"
+~/.claude/skills/tirrell-ai/gdocs-upload/upload.sh slack-post.txt --title "TikTok Strategy Update"
 ```
 
 ### With Custom Styling
@@ -106,7 +106,7 @@ pip install google-api-python-client google-auth google-auth-oauthlib google-aut
 Create a reference Word doc with your preferred styles, then:
 
 ```bash
-.claude/skills/markdown-to-google-docs/upload.sh report.md --reference-doc template.docx
+~/.claude/skills/tirrell-ai/gdocs-upload/upload.sh report.md --reference-doc template.docx
 ```
 
 ## Formatting Notes

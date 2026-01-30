@@ -6,7 +6,8 @@ A [Claude Code](https://docs.anthropic.com/en/docs/claude-code) skills library w
 
 | Skill | Description |
 |-------|-------------|
-| `gdocs` | Convert markdown to Google Docs with rich formatting |
+| `gdocs-upload` | Convert markdown to Google Docs with rich formatting |
+| `gdocs-export` | Export Google Docs to markdown (single doc or folder) |
 
 ## Installation
 
@@ -42,23 +43,30 @@ cd ~/.claude/skills
 git clone https://github.com/zbtirrell/tirrell-ai.git
 ```
 
+## Enabling Specific Skills
+
+After installing the plugin, you can enable individual skills:
+
+```bash
+# Enable only gdocs-upload
+/skill enable z:gdocs-upload
+
+# Enable only gdocs-export
+/skill enable z:gdocs-export
+
+# Enable all skills from the plugin
+/skill enable z:*
+```
+
+To see available skills:
+
+```bash
+/skill list
+```
+
 ## Prerequisites
 
-### For gdocs skill
-
-**1. Pandoc (for markdown conversion)**
-
-```bash
-brew install pandoc
-```
-
-**2. Python Dependencies**
-
-```bash
-pip install google-api-python-client google-auth google-auth-oauthlib google-auth-httplib2
-```
-
-**3. Google API Credentials**
+### Google API Credentials (Required for all skills)
 
 1. Create a project in [Google Cloud Console](https://console.cloud.google.com/)
 2. Enable the **Google Drive API** and **Google Docs API**
@@ -70,9 +78,21 @@ pip install google-api-python-client google-auth google-auth-oauthlib google-aut
 export GOOGLE_CLIENT_SECRET_FILE="/path/to/client-secret.json"
 ```
 
+### Python Dependencies
+
+```bash
+pip install google-api-python-client google-auth google-auth-oauthlib google-auth-httplib2
+```
+
+### Pandoc (for gdocs-upload only)
+
+```bash
+brew install pandoc
+```
+
 ---
 
-## gdocs Skill
+## gdocs-upload Skill
 
 Convert markdown files to Google Docs with rich formatting, preserving styles and links.
 
@@ -100,7 +120,7 @@ Ask Claude to convert your markdown:
 
 Or use the slash command:
 
-> `/gdocs my-document.md`
+> `/gdocs-upload my-document.md`
 
 ### What happens
 
@@ -118,16 +138,16 @@ Or use the slash command:
 
 ```bash
 # Upload markdown as a new Google Doc
-./upload.sh document.md
+~/.claude/skills/tirrell-ai/gdocs-upload/upload.sh document.md
 
 # With custom title
-./upload.sh document.md --title "My Document"
+~/.claude/skills/tirrell-ai/gdocs-upload/upload.sh document.md --title "My Document"
 
 # Upload to specific Drive folder
-./upload.sh document.md --folder "1abc123FolderId"
+~/.claude/skills/tirrell-ai/gdocs-upload/upload.sh document.md --folder "1abc123FolderId"
 
 # Force create new doc (ignore existing ID)
-./upload.sh document.md --new
+~/.claude/skills/tirrell-ai/gdocs-upload/upload.sh document.md --new
 ```
 
 ### Options
@@ -141,44 +161,90 @@ Or use the slash command:
 | `--new` | Force create new doc |
 | `--no-save-id` | Don't save doc ID to markdown |
 
-### Formatting Support
+---
 
-| Markdown | Result |
-|----------|--------|
-| `**bold**` | **bold** |
-| `*italic*` | *italic* |
-| `[link](url)` | Clickable link |
-| `# Heading` | Styled heading (Proxima Nova) |
-| Tables | Bordered with header styling |
-| Lists | Bulleted/numbered with spacing |
-| Code blocks | Monospace font |
+## gdocs-export Skill
 
-### Customizing Styles
+Export Google Documents to local markdown files, keeping them in sync with the source document.
 
-Edit the `apply_document_styles()` function in `upload.py`:
+### Features
 
-```python
-# Heading font
-heading_font = 'Proxima Nova'  # Change to your preferred font
+- **Single doc export** - Export any Google Doc by URL or ID
+- **Folder export** - Batch export all docs from a Drive folder
+- **Split by sections** - Split document into separate files by H1/H2 headings
+- **Preserves formatting** - Headings, lists, tables, links
 
-# Table border color (#b7b7b7 = dark gray 1)
-'red': 0.718, 'green': 0.718, 'blue': 0.718
+### Usage
 
-# Header background (#f3f3f3)
-'red': 0.953, 'green': 0.953, 'blue': 0.953
+Ask Claude to export a Google Doc:
 
-# Space after paragraphs
-'magnitude': 6, 'unit': 'PT'
+> "Export this Google Doc to markdown: https://docs.google.com/document/d/xxx/edit"
+
+> "Download the strategy doc as markdown"
+
+> "Export all docs in this Drive folder to ./docs"
+
+Or use the slash command:
+
+> `/gdocs-export --url "https://docs.google.com/document/d/xxx/edit"`
+
+### CLI Usage
+
+```bash
+# Export a single doc
+~/.claude/skills/tirrell-ai/gdocs-export/export.sh \
+  --url "https://docs.google.com/document/d/DOC_ID/edit" \
+  --output "document.md"
+
+# Export with auto-detected filename
+~/.claude/skills/tirrell-ai/gdocs-export/export.sh \
+  --doc-id "DOC_ID"
+
+# Split by sections
+~/.claude/skills/tirrell-ai/gdocs-export/export.sh \
+  --doc-id "DOC_ID" \
+  --split-sections
+
+# Export all docs from a folder
+~/.claude/skills/tirrell-ai/gdocs-export/export-folder.sh \
+  --folder "https://drive.google.com/drive/folders/FOLDER_ID" \
+  --output "./docs"
 ```
 
-### Troubleshooting
+### Single Doc Options
+
+| Option | Description |
+|--------|-------------|
+| `-u, --url URL` | Full Google Docs URL |
+| `-d, --doc-id ID` | Google Docs document ID |
+| `-o, --output FILE` | Output markdown file path |
+| `--force` | Overwrite existing file |
+| `--split-sections` | Split by H1/H2 headings |
+
+### Folder Export Options
+
+| Option | Description |
+|--------|-------------|
+| `--folder URL_OR_ID` | Google Drive folder URL or ID |
+| `--output DIR` | Output directory |
+| `--force` | Overwrite existing files |
+| `--list-only` | List docs without exporting |
+
+---
+
+## Troubleshooting
 
 | Issue | Solution |
 |-------|----------|
 | "pandoc: command not found" | `brew install pandoc` |
 | "GOOGLE_CLIENT_SECRET_FILE not set" | Export path to OAuth credentials |
 | Rate limit errors | Wait 60 seconds and retry |
-| Authentication errors | Delete `~/.google-drive-upload-token.json` and retry |
+| Authentication errors | Delete token file and retry |
+
+**Token file locations:**
+- Upload: `~/.google-drive-upload-token.json`
+- Export (docs): `~/.google-docs-token.json`
+- Export (folders): `~/.google-drive-token.json`
 
 ---
 
