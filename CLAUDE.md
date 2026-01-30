@@ -12,7 +12,7 @@ Install with `/plugin install z` after adding from marketplace.
 
 Convert markdown files to Google Docs with rich formatting.
 
-**Invocation:** `/gdocs-upload` or ask Claude to "upload markdown to Google Docs"
+**Invocation:** `/z:gdocs-upload` or ask Claude to "upload markdown to Google Docs"
 
 **What It Does:**
 - Converts markdown files to Google Docs format
@@ -25,7 +25,7 @@ Convert markdown files to Google Docs with rich formatting.
 - "Convert the README to a Google Doc"
 - "Sync strategy.md with Google Docs"
 
-**Files:** `gdocs-upload/`
+**Files:** `skills/gdocs-upload/`
 
 ---
 
@@ -33,7 +33,7 @@ Convert markdown files to Google Docs with rich formatting.
 
 Export Google Documents to local markdown files.
 
-**Invocation:** `/gdocs-export` or ask Claude to "download Google Doc as markdown"
+**Invocation:** `/z:gdocs-export` or ask Claude to "download Google Doc as markdown"
 
 **What It Does:**
 - Exports Google Docs to markdown format
@@ -46,7 +46,7 @@ Export Google Documents to local markdown files.
 - "Download the strategy doc as markdown"
 - "Export all docs in this Drive folder"
 
-**Files:** `gdocs-export/`
+**Files:** `skills/gdocs-export/`
 
 ---
 

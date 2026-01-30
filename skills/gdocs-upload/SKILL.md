@@ -12,16 +12,16 @@ Convert markdown files to Google Docs and upload to Google Drive with rich forma
 
 ```bash
 # Upload markdown as a new Google Doc
-~/.claude/skills/tirrell-ai/gdocs-upload/upload.sh input.md
+./upload.sh input.md
 
 # With custom title
-~/.claude/skills/tirrell-ai/gdocs-upload/upload.sh input.md --title "My Document"
+./upload.sh input.md --title "My Document"
 
 # Upload to specific Drive folder
-~/.claude/skills/tirrell-ai/gdocs-upload/upload.sh input.md --folder "1abc123FolderId"
+./upload.sh input.md --folder "1abc123FolderId"
 
 # Force create new doc (ignore existing ID)
-~/.claude/skills/tirrell-ai/gdocs-upload/upload.sh input.md --new
+./upload.sh input.md --new
 ```
 
 ## Options
@@ -91,14 +91,14 @@ pip install google-api-python-client google-auth google-auth-oauthlib google-aut
 ### Basic Upload
 
 ```bash
-~/.claude/skills/tirrell-ai/gdocs-upload/upload.sh notes.md
+./upload.sh notes.md
 # Output: https://docs.google.com/document/d/xxx/edit
 ```
 
 ### Custom Title
 
 ```bash
-~/.claude/skills/tirrell-ai/gdocs-upload/upload.sh slack-post.txt --title "TikTok Strategy Update"
+./upload.sh slack-post.txt --title "TikTok Strategy Update"
 ```
 
 ### With Custom Styling
@@ -106,7 +106,7 @@ pip install google-api-python-client google-auth google-auth-oauthlib google-aut
 Create a reference Word doc with your preferred styles, then:
 
 ```bash
-~/.claude/skills/tirrell-ai/gdocs-upload/upload.sh report.md --reference-doc template.docx
+./upload.sh report.md --reference-doc template.docx
 ```
 
 ## Formatting Notes

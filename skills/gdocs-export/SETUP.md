@@ -78,7 +78,7 @@ After this, you won't need to authenticate again unless the token expires.
 Try exporting a document:
 
 ```bash
-~/.claude/skills/tirrell-ai/gdocs-export/export.sh \
+./export.sh \
   --url "https://docs.google.com/document/d/YOUR_DOC_ID/edit" \
   --output "test-export.md"
 ```
@@ -86,7 +86,7 @@ Try exporting a document:
 Or uploading a markdown file:
 
 ```bash
-~/.claude/skills/tirrell-ai/gdocs-upload/upload.sh test.md
+../gdocs-upload/upload.sh test.md
 ```
 
 ## Security Best Practices

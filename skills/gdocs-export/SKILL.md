@@ -12,21 +12,21 @@ Export Google Documents to local markdown files, keeping them in sync with the s
 
 ```bash
 # Export a Google Doc to markdown
-~/.claude/skills/tirrell-ai/gdocs-export/export.sh \
+./export.sh \
   --url "https://docs.google.com/document/d/1T8aa0gc4bZQ7h3p5rna0bD1owue_JI4sU7ahvBZb6Ew/edit" \
   --output "analysis.md"
 
 # Export with auto-detected filename from document title
-~/.claude/skills/tirrell-ai/gdocs-export/export.sh \
+./export.sh \
   --url "https://docs.google.com/document/d/1T8aa0gc4bZQ7h3p5rna0bD1owue_JI4sU7ahvBZb6Ew/edit"
 
 # Export using just the document ID
-~/.claude/skills/tirrell-ai/gdocs-export/export.sh \
+./export.sh \
   --doc-id "1T8aa0gc4bZQ7h3p5rna0bD1owue_JI4sU7ahvBZb6Ew" \
   --output "analysis.md"
 
 # Export ALL Google Docs from a Drive folder
-~/.claude/skills/tirrell-ai/gdocs-export/export-folder.sh \
+./export-folder.sh \
   --folder "https://drive.google.com/drive/folders/1f7-IxJdicZV5JoO_BiaTWUERUr5YK4ki" \
   --output "./strategy/2026q1-rocks"
 ```
@@ -35,7 +35,7 @@ Export Google Documents to local markdown files, keeping them in sync with the s
 
 ### Single Document Export
 
-**Location:** `~/.claude/skills/tirrell-ai/gdocs-export/export.sh`
+**Location:** `./export.sh`
 
 | Option | Description |
 |--------|-------------|
@@ -48,7 +48,7 @@ Export Google Documents to local markdown files, keeping them in sync with the s
 
 ### Folder Export (Batch)
 
-**Location:** `~/.claude/skills/tirrell-ai/gdocs-export/export-folder.sh`
+**Location:** `./export-folder.sh`
 
 | Option | Description |
 |--------|-------------|
@@ -90,7 +90,7 @@ pip install google-api-python-client google-auth google-auth-oauthlib google-aut
 Or install via the skill's requirements file:
 
 ```bash
-pip install -r ~/.claude/skills/tirrell-ai/gdocs-export/requirements.txt
+pip install -r ./requirements.txt
 ```
 
 ## Examples
@@ -98,7 +98,7 @@ pip install -r ~/.claude/skills/tirrell-ai/gdocs-export/requirements.txt
 ### Export Specific Document
 
 ```bash
-~/.claude/skills/tirrell-ai/gdocs-export/export.sh \
+./export.sh \
   --url "https://docs.google.com/document/d/1T8aa0gc4bZQ7h3p5rna0bD1owue_JI4sU7ahvBZb6Ew/edit" \
   --output "smash-balloon-analysis.md"
 ```
@@ -107,14 +107,14 @@ pip install -r ~/.claude/skills/tirrell-ai/gdocs-export/requirements.txt
 
 ```bash
 # Output will be based on document title (e.g., "Smash Balloon Analysis.md")
-~/.claude/skills/tirrell-ai/gdocs-export/export.sh \
+./export.sh \
   --doc-id "1T8aa0gc4bZQ7h3p5rna0bD1owue_JI4sU7ahvBZb6Ew"
 ```
 
 ### Force Overwrite
 
 ```bash
-~/.claude/skills/tirrell-ai/gdocs-export/export.sh \
+./export.sh \
   --url "https://docs.google.com/document/d/1T8aa0gc4bZQ7h3p5rna0bD1owue_JI4sU7ahvBZb6Ew/edit" \
   --output "analysis.md" \
   --force
@@ -125,7 +125,7 @@ pip install -r ~/.claude/skills/tirrell-ai/gdocs-export/requirements.txt
 Export each major section (H1/H2 headings) to separate files:
 
 ```bash
-~/.claude/skills/tirrell-ai/gdocs-export/export.sh \
+./export.sh \
   --doc-id "1T8aa0gc4bZQ7h3p5rna0bD1owue_JI4sU7ahvBZb6Ew" \
   --output "smash-balloon-analysis" \
   --split-sections
@@ -140,7 +140,7 @@ This will create files like:
 ### Export Entire Folder
 
 ```bash
-~/.claude/skills/tirrell-ai/gdocs-export/export-folder.sh \
+./export-folder.sh \
   --folder "https://drive.google.com/drive/folders/1f7-IxJdicZV5JoO_BiaTWUERUr5YK4ki" \
   --output "./docs"
 ```

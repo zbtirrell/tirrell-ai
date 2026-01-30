@@ -43,26 +43,21 @@ cd ~/.claude/skills
 git clone https://github.com/zbtirrell/tirrell-ai.git
 ```
 
-## Enabling Specific Skills
+## Using Skills
 
-After installing the plugin, you can enable individual skills:
-
-```bash
-# Enable only gdocs-upload
-/skill enable z:gdocs-upload
-
-# Enable only gdocs-export
-/skill enable z:gdocs-export
-
-# Enable all skills from the plugin
-/skill enable z:*
-```
-
-To see available skills:
+After installing the plugin, use the skills with slash commands:
 
 ```bash
-/skill list
+# Upload markdown to Google Docs
+/z:gdocs-upload my-document.md
+
+# Export a Google Doc to markdown
+/z:gdocs-export --url "https://docs.google.com/document/d/xxx/edit"
 ```
+
+Or ask Claude naturally:
+- "Upload my-document.md to Google Docs"
+- "Export this Google Doc to markdown: [url]"
 
 ## Prerequisites
 
@@ -120,7 +115,7 @@ Ask Claude to convert your markdown:
 
 Or use the slash command:
 
-> `/gdocs-upload my-document.md`
+> `/z:gdocs-upload my-document.md`
 
 ### What happens
 
@@ -138,16 +133,16 @@ Or use the slash command:
 
 ```bash
 # Upload markdown as a new Google Doc
-~/.claude/skills/tirrell-ai/gdocs-upload/upload.sh document.md
+~/.claude/plugins/cache/tirrell-ai/z/*/skills/gdocs-upload/upload.sh document.md
 
 # With custom title
-~/.claude/skills/tirrell-ai/gdocs-upload/upload.sh document.md --title "My Document"
+~/.claude/plugins/cache/tirrell-ai/z/*/skills/gdocs-upload/upload.sh document.md --title "My Document"
 
 # Upload to specific Drive folder
-~/.claude/skills/tirrell-ai/gdocs-upload/upload.sh document.md --folder "1abc123FolderId"
+~/.claude/plugins/cache/tirrell-ai/z/*/skills/gdocs-upload/upload.sh document.md --folder "1abc123FolderId"
 
 # Force create new doc (ignore existing ID)
-~/.claude/skills/tirrell-ai/gdocs-upload/upload.sh document.md --new
+~/.claude/plugins/cache/tirrell-ai/z/*/skills/gdocs-upload/upload.sh document.md --new
 ```
 
 ### Options
@@ -186,27 +181,27 @@ Ask Claude to export a Google Doc:
 
 Or use the slash command:
 
-> `/gdocs-export --url "https://docs.google.com/document/d/xxx/edit"`
+> `/z:gdocs-export --url "https://docs.google.com/document/d/xxx/edit"`
 
 ### CLI Usage
 
 ```bash
 # Export a single doc
-~/.claude/skills/tirrell-ai/gdocs-export/export.sh \
+~/.claude/plugins/cache/tirrell-ai/z/*/skills/gdocs-export/export.sh \
   --url "https://docs.google.com/document/d/DOC_ID/edit" \
   --output "document.md"
 
 # Export with auto-detected filename
-~/.claude/skills/tirrell-ai/gdocs-export/export.sh \
+~/.claude/plugins/cache/tirrell-ai/z/*/skills/gdocs-export/export.sh \
   --doc-id "DOC_ID"
 
 # Split by sections
-~/.claude/skills/tirrell-ai/gdocs-export/export.sh \
+~/.claude/plugins/cache/tirrell-ai/z/*/skills/gdocs-export/export.sh \
   --doc-id "DOC_ID" \
   --split-sections
 
 # Export all docs from a folder
-~/.claude/skills/tirrell-ai/gdocs-export/export-folder.sh \
+~/.claude/plugins/cache/tirrell-ai/z/*/skills/gdocs-export/export-folder.sh \
   --folder "https://drive.google.com/drive/folders/FOLDER_ID" \
   --output "./docs"
 ```
