@@ -1,0 +1,19 @@
+{
+	"name": "z",
+	"description": "Skills library for Claude Code: Google Docs integration, document workflows, and productivity tools",
+	"version": "1.0.0",
+	"author": {
+		"name": "Zachary Tirrell",
+		"email": "zbtirrell@gmail.com"
+	},
+	"homepage": "https://github.com/zbtirrell/tirrell-ai",
+	"repository": "https://github.com/zbtirrell/tirrell-ai",
+	"license": "MIT",
+	"keywords": [
+		"skills",
+		"google-docs",
+		"productivity",
+		"workflows",
+		"documents"
+	]
+}

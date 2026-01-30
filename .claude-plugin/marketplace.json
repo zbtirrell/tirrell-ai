@@ -1,0 +1,14 @@
+{
+	"name": "tirrell-ai",
+	"owner": {
+		"name": "Zachary Tirrell",
+		"email": "zbtirrell@gmail.com"
+	},
+	"plugins": [
+		{
+			"name": "z",
+			"source": "./",
+			"description": "Skills library for Claude Code: Google Docs integration (gdocs), document workflows, and productivity tools."
+		}
+	]
+}
