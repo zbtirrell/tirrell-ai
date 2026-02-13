@@ -97,14 +97,44 @@ def save_doc_id_to_markdown(markdown_path: str, doc_id: str):
         f.write(content)
 
 
+def preprocess_markdown_for_lists(content: str) -> str:
+    """Ensure blank lines before list items that follow paragraphs.
+
+    Pandoc requires a blank line before the start of a list block.
+    Without this, bullets immediately after a paragraph line get merged
+    into that paragraph as inline text instead of becoming list items.
+    """
+    lines = content.split('\n')
+    result = []
+    for i, line in enumerate(lines):
+        # Check if this line starts a list item (-, *, +, or 1.)
+        if re.match(r'^[\-\*\+]\s', line) or re.match(r'^\d+\.\s', line):
+            # Insert blank line if previous line is non-empty, non-blank,
+            # and not itself a list item
+            if result and result[-1].strip() and not re.match(r'^[\-\*\+]\s', result[-1]) and not re.match(r'^\d+\.\s', result[-1]):
+                result.append('')
+        result.append(line)
+    return '\n'.join(result)
+
+
 def convert_markdown_to_docx(markdown_path: str, docx_path: str, reference_doc: str = None, content_override: str = None):
     """Convert markdown to docx using pandoc."""
 
     # If we have cleaned content (with doc ID stripped), use temp file
     if content_override:
+        content_override = preprocess_markdown_for_lists(content_override)
         with tempfile.NamedTemporaryFile(mode='w', suffix='.md', delete=False) as tmp:
             tmp.write(content_override)
             markdown_path = tmp.name
+    else:
+        # Preprocess the file content even when no content_override
+        with open(markdown_path, 'r') as f:
+            raw = f.read()
+        preprocessed = preprocess_markdown_for_lists(raw)
+        if preprocessed != raw:
+            with tempfile.NamedTemporaryFile(mode='w', suffix='.md', delete=False) as tmp:
+                tmp.write(preprocessed)
+                markdown_path = tmp.name
 
     cmd = ['pandoc', markdown_path, '-o', docx_path]
 
@@ -355,6 +385,23 @@ def clear_document_content(docs_service, doc_id: str):
             }
         ).execute()
 
+    # Remove any orphaned list definitions from the remaining empty paragraph.
+    # Without this, re-uploaded content can inherit bullet formatting from the
+    # previous version of the document.
+    docs_service.documents().batchUpdate(
+        documentId=doc_id,
+        body={
+            'requests': [{
+                'deleteParagraphBullets': {
+                    'range': {
+                        'startIndex': 1,
+                        'endIndex': 2
+                    }
+                }
+            }]
+        }
+    ).execute()
+
 
 def copy_document_content(docs_service, source_doc_id: str, dest_doc_id: str):
     """Copy all content from source doc to destination doc using Docs API."""
@@ -424,6 +471,9 @@ def copy_doc_content_to_existing(docs_service, source_doc_id: str, dest_doc_id: 
     if not source_body:
         return
 
+    # Capture list definitions so we can distinguish numbered vs bulleted lists
+    source_lists = source_doc.get('lists', {})
+
     # Collect paragraphs with their text runs (preserving inline formatting info)
     # Each paragraph: (named_style, [(text, text_style), ...])
     paragraphs = []
@@ -437,6 +487,13 @@ def copy_doc_content_to_existing(docs_service, source_doc_id: str, dest_doc_id: 
             bullet = para.get('bullet')
 
             text_runs = []
+
+            # For nested bullets, prepend tab characters to indicate nesting level
+            if bullet:
+                nesting_level = bullet.get('nestingLevel', 0)
+                if nesting_level > 0:
+                    text_runs.append(('\t' * nesting_level, {}))
+
             for para_elem in para.get('elements', []):
                 if 'textRun' in para_elem:
                     text = para_elem['textRun'].get('content', '')
@@ -568,6 +625,56 @@ def copy_doc_content_to_existing(docs_service, source_doc_id: str, dest_doc_id: 
                 time.sleep(0.5)  # Small delay between batches
             except Exception as e:
                 print(f"  Warning: Could not apply some formatting: {e}")
+
+    # Step 2b: Apply bullet formatting in a separate pass.
+    # This must happen after all text insertion and paragraph styling to avoid
+    # index conflicts. We collect contiguous bullet ranges, determine whether
+    # they are numbered or bulleted, and send createParagraphBullets requests.
+    bullet_requests = []
+    bullet_index = 1  # mirrors current_index tracking above
+
+    for named_style, text_runs, bullet in paragraphs:
+        para_start = bullet_index
+        para_len = sum(len(text) for text, _ in text_runs)
+
+        if bullet:
+            # Determine if numbered or bulleted by checking source list properties
+            list_id = bullet.get('listId', '')
+            preset = 'BULLET_DISC_CIRCLE_SQUARE'  # default to unordered
+
+            if list_id and list_id in source_lists:
+                list_props = source_lists[list_id]
+                nesting_levels = list_props.get('listProperties', {}).get('nestingLevels', [])
+                if nesting_levels:
+                    first_level = nesting_levels[0]
+                    glyph_type = first_level.get('glyphType', '')
+                    # Numbered list glyph types: DECIMAL, ALPHA, ROMAN, ZERO_DECIMAL, UPPER_ALPHA, UPPER_ROMAN
+                    if glyph_type in ('DECIMAL', 'ALPHA', 'ROMAN', 'ZERO_DECIMAL', 'UPPER_ALPHA', 'UPPER_ROMAN'):
+                        preset = 'NUMBERED_DECIMAL_ALPHA_ROMAN'
+
+            bullet_requests.append({
+                'createParagraphBullets': {
+                    'range': {
+                        'startIndex': para_start,
+                        'endIndex': para_start + para_len
+                    },
+                    'bulletPreset': preset
+                }
+            })
+
+        bullet_index += para_len
+
+    if bullet_requests:
+        for i in range(0, len(bullet_requests), 50):
+            batch = bullet_requests[i:i+50]
+            try:
+                docs_service.documents().batchUpdate(
+                    documentId=dest_doc_id,
+                    body={'requests': batch}
+                ).execute()
+                time.sleep(0.5)
+            except Exception as e:
+                print(f"  Warning: Could not apply some bullet formatting: {e}")
 
     # Step 3: Handle tables - need to insert them and fill content
     # Tables are more complex because we need to:
