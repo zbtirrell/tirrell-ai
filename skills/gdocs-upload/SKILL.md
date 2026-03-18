@@ -8,6 +8,8 @@ allowed-tools: [Bash]
 
 Convert markdown files to Google Docs and upload to Google Drive with rich formatting.
 
+**All scripts below live in `${CLAUDE_SKILL_DIR}`.** Always `cd` there before running them — do not search for scripts elsewhere.
+
 ## Quick Start
 
 ```bash

@@ -8,6 +8,8 @@ allowed-tools: [Bash]
 
 Export Google Documents to local markdown files, keeping them in sync with the source document.
 
+**All scripts below live in `${CLAUDE_SKILL_DIR}`.** Always `cd` there before running them — do not search for scripts elsewhere.
+
 ## Quick Start
 
 ```bash
