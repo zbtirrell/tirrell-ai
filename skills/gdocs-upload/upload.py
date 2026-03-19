@@ -230,19 +230,27 @@ def apply_document_styles(doc_id: str, heading_font: str = 'Proxima Nova'):
             # Skip empty paragraphs
             if end_index > start_index:
                 list_item_count += 1
+                is_list_item = 'bullet' in para
+                style_update = {
+                    'spaceBelow': {
+                        'magnitude': 8 if is_list_item else 6,
+                        'unit': 'PT'
+                    }
+                }
+                fields = 'spaceBelow'
+                # List items need NEVER_COLLAPSE or Google Docs
+                # suppresses spacing between consecutive list items
+                if is_list_item:
+                    style_update['spacingMode'] = 'NEVER_COLLAPSE'
+                    fields = 'spaceBelow,spacingMode'
                 requests.append({
                     'updateParagraphStyle': {
                         'range': {
                             'startIndex': start_index,
                             'endIndex': end_index
                         },
-                        'paragraphStyle': {
-                            'spaceBelow': {
-                                'magnitude': 6,
-                                'unit': 'PT'
-                            }
-                        },
-                        'fields': 'spaceBelow'
+                        'paragraphStyle': style_update,
+                        'fields': fields
                     }
                 })
 
