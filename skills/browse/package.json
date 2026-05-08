@@ -1,0 +1,16 @@
+{
+  "name": "zbt-browse",
+  "version": "0.1.0",
+  "description": "Lightweight Playwright-backed browse skill (no daemon, persistent profile)",
+  "type": "module",
+  "scripts": {
+    "browse": "bun run src/browse.ts"
+  },
+  "dependencies": {
+    "playwright": "^1.48.0",
+    "turndown": "^7.2.0"
+  },
+  "devDependencies": {
+    "@types/turndown": "^5.0.5"
+  }
+}

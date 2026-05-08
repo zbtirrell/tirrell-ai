@@ -1,7 +1,7 @@
 {
 	"name": "z",
-	"description": "Skills library for Claude Code: Google Docs integration, document workflows, and productivity tools",
-	"version": "1.0.3",
+	"description": "Skills library for Claude Code: Google Docs integration, document workflows, headless browse, and productivity tools",
+	"version": "1.1.0",
 	"author": {
 		"name": "Zachary Tirrell",
 		"email": "zbtirrell@gmail.com"
@@ -14,6 +14,8 @@
 		"google-docs",
 		"productivity",
 		"workflows",
-		"documents"
+		"documents",
+		"browse",
+		"playwright"
 	]
 }

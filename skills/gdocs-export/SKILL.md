@@ -1,6 +1,6 @@
 ---
 name: gdocs-export
-description: Export Google Documents to local markdown files, keeping them in sync with the source document. Supports single doc export, batch folder export, and splitting by sections.
+description: "**Google Docs → Markdown Exporter**: Use this skill any time the user wants to save, download, grab, export, or convert a Google Doc to a local .md file — including batch export of an entire Google Drive folder. MANDATORY TRIGGERS: google doc, gdoc, drive folder + any of markdown, md, local, download, save, export, pull down, sync. Does NOT apply to: uploading to Google Docs, Google Sheets/Slides, reading a doc without saving it, or converting local files."
 allowed-tools: [Bash]
 ---
 

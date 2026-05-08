@@ -1,0 +1,4 @@
+#!/bin/bash
+# zbt-browse wrapper — invoke from anywhere.
+DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+exec bun run "$DIR/src/browse.ts" "$@"

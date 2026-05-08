@@ -1,0 +1,7 @@
+# Bun / Node deps — install via setup.sh, never commit
+node_modules/
+bun.lockb
+bun.lock
+
+# Skill-local runtime state
+**/.zbt-browse/
